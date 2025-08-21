@@ -1,0 +1,22 @@
+language: "ko-KR"
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+auto_review:
+  enabled: true
+ignore_title_keywords:
+  - "wip"
+  - "draft"
+tools:
+  pmd: # java
+    enabled: true
+  gitleaks:
+    enabled: true
+  hadolint: # dockerfile linter
+    enabled: true
+  actionlint: # github actions workflow 정적 검사
+    enabled: true
+
+chat:
+  auto_reply: true

@@ -36,3 +36,9 @@ bin/
 ### VS Code ###
 .vscode/
 .DS_Store
+
+### env ###
+backend/.env
+
+### db ###
+backend/db/

@@ -1,8 +1,8 @@
 services:
   springboot:
-    container_name: rushticket-springboot
     image: "rushticket:latest"
     build: .
+    env_file: .env
     ports:
       - "8080:8080"
     environment:
@@ -12,9 +12,9 @@ services:
     networks:
       - rushticket-network
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
   mysql:
-    container_name: rushticket-mysql
     image: "mysql:8.0"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -26,6 +26,13 @@ services:
     volumes:
       - rushticket-db:/var/lib/mysql
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rushticket-network
 
 volumes:
   rushticket-db:

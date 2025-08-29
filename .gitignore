@@ -39,6 +39,7 @@ bin/
 
 ### env ###
 backend/.env
+backend/src/main/resources/env.properties
 
 ### db ###
 backend/db/

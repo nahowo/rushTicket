@@ -3,6 +3,7 @@ language: "ko-KR"
 reviews:
   profile: "assertive"
   high_level_summary: true
+  language: "ko-KR"
 auto_review:
   enabled: true
 ignore_title_keywords:
@@ -20,3 +21,4 @@ tools:
 
 chat:
   auto_reply: true
+  language: "ko-KR"

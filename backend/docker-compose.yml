@@ -1,19 +1,19 @@
 services:
-  springboot:
-    image: "rushticket:latest"
-    build: .
-    env_file: .env
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-    networks:
-      - rushticket-network
-    depends_on:
-      mysql:
-        condition: service_healthy
+#  springboot:
+#    image: "rushticket:latest"
+#    build: .
+#    env_file: env.properties
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+#      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+#    networks:
+#      - rushticket-network
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
   mysql:
     image: "mysql:8.0"
     environment:
@@ -26,11 +26,11 @@ services:
     volumes:
       - rushticket-db:/var/lib/mysql
     restart: always
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
     networks:
       - rushticket-network
 

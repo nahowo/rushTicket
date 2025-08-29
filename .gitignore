@@ -38,7 +38,7 @@ bin/
 .DS_Store
 
 ### env ###
-backend/.env
+backend/env.properties
 
 ### db ###
 backend/db/

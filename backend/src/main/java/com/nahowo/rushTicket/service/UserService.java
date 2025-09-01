@@ -1,5 +1,6 @@
 package com.nahowo.rushTicket.service;
 
+import com.nahowo.rushTicket.config.error.exception.UserEmailDuplicatedException;
 import com.nahowo.rushTicket.domain.User;
 import com.nahowo.rushTicket.dto.request.UserCreateRequest;
 import com.nahowo.rushTicket.dto.response.UserResponse;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserService {
     private final UserRepository userRepository;
 
@@ -20,19 +20,14 @@ public class UserService {
         String name = reqeust.name();
         String email = reqeust.email();
         String password = reqeust.password();
-        try {
-            isEmailDuplicated(email);
-        } catch (Exception e) {
-            log.error("이메일 중복: " + email);
-            return null;
-        }
+        isEmailDuplicated(email);
         User createdUser = userRepository.save(new User(name, email, password));
         return new UserResponse(createdUser);
     }
 
-    private void isEmailDuplicated(String email) throws Exception{
+    private void isEmailDuplicated(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new Exception();
+            throw new UserEmailDuplicatedException();
         }
     }
 }

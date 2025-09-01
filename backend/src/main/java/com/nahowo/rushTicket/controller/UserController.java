@@ -1,5 +1,8 @@
 package com.nahowo.rushTicket.controller;
 
+import static com.nahowo.rushTicket.config.result.ResultCode.USER_CREATE;
+
+import com.nahowo.rushTicket.config.result.ResultResponse;
 import com.nahowo.rushTicket.dto.request.UserCreateRequest;
 import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.service.UserService;
@@ -21,8 +24,8 @@ public class UserController {
     private final UserService userService;
     @Operation(description = "User Registration")
     @PostMapping("/signup")
-    public ResponseEntity<String> createUser(@RequestBody @Valid UserCreateRequest userCreateReqeust) {
+    public ResponseEntity<ResultResponse> createUser(@RequestBody @Valid UserCreateRequest userCreateReqeust) {
         UserResponse user = userService.createUser(userCreateReqeust);
-        return ResponseEntity.ok(user.toString());
+        return ResponseEntity.ok(ResultResponse.of(USER_CREATE, user));
     }
 }

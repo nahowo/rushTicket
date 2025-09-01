@@ -17,9 +17,9 @@ public class UserService {
 
     @Transactional
     public UserResponse createUser(UserCreateRequest reqeust) {
-        String name = reqeust.getName();
-        String email = reqeust.getEmail();
-        String password = reqeust.getPassword();
+        String name = reqeust.name();
+        String email = reqeust.email();
+        String password = reqeust.password();
         try {
             isEmailDuplicated(email);
         } catch (Exception e) {

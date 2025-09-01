@@ -1,6 +1,6 @@
 package com.nahowo.rushTicket.controller;
 
-import com.nahowo.rushTicket.dto.request.UserCreateReqeust;
+import com.nahowo.rushTicket.dto.request.UserCreateRequest;
 import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
     @Operation(description = "User Registration")
     @PostMapping("/signup")
-    public ResponseEntity<String> createUser(@RequestBody UserCreateReqeust userCreateReqeust) {
+    public ResponseEntity<String> createUser(@RequestBody UserCreateRequest userCreateReqeust) {
         UserResponse user = userService.createUser(userCreateReqeust);
         return ResponseEntity.ok(user.toString());
     }

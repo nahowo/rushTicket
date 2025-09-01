@@ -1,7 +1,7 @@
 package com.nahowo.rushTicket.service;
 
 import com.nahowo.rushTicket.domain.User;
-import com.nahowo.rushTicket.dto.request.UserCreateReqeust;
+import com.nahowo.rushTicket.dto.request.UserCreateRequest;
 import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserResponse createUser(UserCreateReqeust reqeust) {
+    public UserResponse createUser(UserCreateRequest reqeust) {
         String name = reqeust.getName();
         String email = reqeust.getEmail();
         String password = reqeust.getPassword();

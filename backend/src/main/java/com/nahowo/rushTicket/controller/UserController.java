@@ -1,9 +1,11 @@
 package com.nahowo.rushTicket.controller;
 
 import static com.nahowo.rushTicket.config.result.ResultCode.USER_CREATE;
+import static com.nahowo.rushTicket.config.result.ResultCode.USER_LOGIN;
 
 import com.nahowo.rushTicket.config.result.ResultResponse;
 import com.nahowo.rushTicket.dto.request.UserCreateRequest;
+import com.nahowo.rushTicket.dto.request.UserLoginRequest;
 import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,11 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+
     private final UserService userService;
+
     @Operation(description = "User Registration")
     @PostMapping("/signup")
-    public ResponseEntity<ResultResponse> createUser(@RequestBody @Valid UserCreateRequest userCreateReqeust) {
+    public ResponseEntity<ResultResponse> createUser(
+        @RequestBody @Valid UserCreateRequest userCreateReqeust) {
         UserResponse user = userService.createUser(userCreateReqeust);
         return ResponseEntity.ok(ResultResponse.of(USER_CREATE, user));
+    }
+
+    @Operation(description = "User login")
+    @PostMapping("/login")
+    public ResponseEntity<ResultResponse> login(
+        @RequestBody @Valid UserLoginRequest userLoginRequest) {
+        UserResponse user = userService.loginUser(userLoginRequest);
+        return ResponseEntity.ok(ResultResponse.of(USER_LOGIN, user));
     }
 }

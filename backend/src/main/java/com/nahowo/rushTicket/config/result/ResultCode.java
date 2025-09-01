@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ResultCode {
-    USER_CREATE("UR001", "회원 생성 성공");
+    USER_CREATE("UR001", "회원 생성 성공"),
+    USER_LOGIN("UR002", "회원 로그인 성공");
 
     private final String code;
     private final String message;

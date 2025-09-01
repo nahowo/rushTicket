@@ -1,8 +1,10 @@
 package com.nahowo.rushTicket.service;
 
+import com.nahowo.rushTicket.config.error.exception.LoginFailedException;
 import com.nahowo.rushTicket.config.error.exception.UserEmailDuplicatedException;
 import com.nahowo.rushTicket.domain.User;
 import com.nahowo.rushTicket.dto.request.UserCreateRequest;
+import com.nahowo.rushTicket.dto.request.UserLoginRequest;
 import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -28,5 +30,17 @@ public class UserService {
         } catch (DataIntegrityViolationException e) {
             throw new UserEmailDuplicatedException();
         }
+    }
+
+    @Transactional
+    public UserResponse loginUser(UserLoginRequest request) {
+        String email = request.email();
+        String password = request.password();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new LoginFailedException());
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new LoginFailedException();
+        }
+        return new UserResponse(user);
     }
 }

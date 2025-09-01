@@ -5,6 +5,7 @@ import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
     @Operation(description = "User Registration")
     @PostMapping("/signup")
-    public ResponseEntity<String> createUser(@RequestBody UserCreateRequest userCreateReqeust) {
+    public ResponseEntity<String> createUser(@RequestBody @Valid UserCreateRequest userCreateReqeust) {
         UserResponse user = userService.createUser(userCreateReqeust);
         return ResponseEntity.ok(user.toString());
     }

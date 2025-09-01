@@ -7,6 +7,7 @@ import com.nahowo.rushTicket.dto.response.UserResponse;
 import com.nahowo.rushTicket.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +22,10 @@ public class UserService {
         String name = reqeust.name();
         String email = reqeust.email();
         String password = passwordEncoder.encode(reqeust.password());
-        isEmailDuplicated(email);
-        User createdUser = userRepository.save(new User(name, email, password));
-        return new UserResponse(createdUser);
-    }
-
-    private void isEmailDuplicated(String email) {
-        if (userRepository.existsByEmail(email)) {
+        try {
+            User createdUser = userRepository.save(new User(name, email, password));
+            return new UserResponse(createdUser);
+        } catch (DataIntegrityViolationException e) {
             throw new UserEmailDuplicatedException();
         }
     }

@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, ("/api/v1/users/login")).permitAll()
                 .requestMatchers(("/swagger-ui/**")).permitAll()
                 .requestMatchers(("/v3/api-docs/**")).permitAll()
+                .requestMatchers(("/api/v1/**")).permitAll() // todo: swagger test에서만 사용
                 .anyRequest().authenticated()
             );
         return http.build();

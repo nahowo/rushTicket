@@ -2,6 +2,7 @@ package com.nahowo.rushTicket.service;
 
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
 import com.nahowo.rushTicket.domain.Venue;
+import com.nahowo.rushTicket.domain.enums.VenueStatus;
 import com.nahowo.rushTicket.dto.response.VenueDetailResponse;
 import com.nahowo.rushTicket.dto.response.VenueResponse;
 import com.nahowo.rushTicket.repository.VenueReservationRepository;
@@ -30,20 +31,15 @@ public class VenueService {
             .orElseThrow(VenueNotFoundException::new);
         LocalDate today = LocalDate.now();
 
-        TreeMap<LocalDate, VenueStats> availabilities = new TreeMap<>();
+        TreeMap<LocalDate, VenueStatus> availabilities = new TreeMap<>();
         for (int i = 0; i <= 30; i++) {
             LocalDate day = today.plusDays(i);
             if (venueReservationRepository.existsByVenueAndEventDate(venue, day)) {
-                availabilities.put(day, VenueStats.RESERVED);
+                availabilities.put(day, VenueStatus.RESERVED);
             } else {
-                availabilities.put(day, VenueStats.AVAILABLE);
+                availabilities.put(day, VenueStatus.AVAILABLE);
             }
         }
         return new VenueDetailResponse(venue, availabilities);
     }
-
-    public enum VenueStats {
-        AVAILABLE, RESERVED
-    }
-
 }

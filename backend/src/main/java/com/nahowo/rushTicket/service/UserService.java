@@ -37,7 +37,7 @@ public class UserService {
         String email = request.email();
         String password = request.password();
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new LoginFailedException());
+            .orElseThrow(LoginFailedException::new);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new LoginFailedException();
         }

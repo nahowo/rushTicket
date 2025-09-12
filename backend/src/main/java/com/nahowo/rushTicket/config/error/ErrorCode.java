@@ -12,8 +12,8 @@ public enum ErrorCode {
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED.value(), "UE002", "이메일 또는 비밀번호 불일치"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "UE003", "유저를 찾을 수 없음"),
     VENUE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "VE001", "공연장을 찾을 수 없음"),
-    EVENT_NOT_FOUND(HttpStatus.NO_CONTENT.value(), "EE001", "공연을 찾을 수 없음"),
-    SEAT_GROUP_NOT_FOUND(HttpStatus.NO_CONTENT.value(), "SE001", "좌석 그룹을 찾을 수 없음"),
+    EVENT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "EE001", "공연을 찾을 수 없음"),
+    SEAT_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "SE001", "좌석 그룹을 찾을 수 없음"),
     EVENT_DATE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "EDE001", "공연일시를 찾을 수 없음");
     private final int httpStatus;
     private final String code;

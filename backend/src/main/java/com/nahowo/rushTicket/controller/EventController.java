@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,5 +38,11 @@ public class EventController {
         @RequestBody @Valid EventUpdateRequest request) {
         EventResponse event = eventService.updateEvent(eventId, request);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_UPDATE, event));
+    }
+
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<ResultResponse> deleteEvent(@PathVariable Long eventId) {
+        eventService.deleteEvent(eventId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_DELETE));
     }
 }

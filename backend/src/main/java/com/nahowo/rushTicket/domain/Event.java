@@ -1,5 +1,6 @@
 package com.nahowo.rushTicket.domain;
 
+import com.nahowo.rushTicket.dto.request.EventUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,8 +12,10 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "events")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,6 +44,13 @@ public class Event extends BaseEntity{
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventStatus status;
+
+    public void update(EventUpdateRequest request) {
+        this.bookingStartTime = request.bookingStartTime();
+        this.bookingEndTime = request.bookingEndTime();
+        this.name = request.name();
+        this.description = request.description();
+    }
 
     public enum EventStatus {
         ACTIVE, CANCELED

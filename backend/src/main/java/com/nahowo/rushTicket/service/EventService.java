@@ -1,6 +1,7 @@
 package com.nahowo.rushTicket.service;
 
 import com.nahowo.rushTicket.config.error.exception.EventDateTimeNotFoundException;
+import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueSeatNotFoundException;
@@ -16,6 +17,7 @@ import com.nahowo.rushTicket.dto.request.EventCreateRequest;
 import com.nahowo.rushTicket.dto.request.EventCreateRequest.DateSeatGroupPrice;
 import com.nahowo.rushTicket.dto.request.EventCreateRequest.EventTimeAndPrice;
 import com.nahowo.rushTicket.dto.request.EventCreateRequest.SeatGroupPrice;
+import com.nahowo.rushTicket.dto.request.EventUpdateRequest;
 import com.nahowo.rushTicket.dto.response.EventResponse;
 import com.nahowo.rushTicket.repository.EventDateTimeRepository;
 import com.nahowo.rushTicket.repository.EventRepository;
@@ -75,8 +77,6 @@ public class EventService {
             status);
         eventRepository.save(event);
 
-        Map<Long, Map<Long, BigDecimal>> response = new TreeMap<>();
-
         // event_date_times 튜플 추가
         for (EventTimeAndPrice eventTimeAndPrice : eventTimeAndPrices) {
             List<DateSeatGroupPrice> dateSeatGroupPrices = eventTimeAndPrice.dateSeatGroupPrices();
@@ -84,9 +84,6 @@ public class EventService {
                 EventDateTime eventDateTime = new EventDateTime(event,
                     dateSeatGroupPrice.eventStartTime(), dateSeatGroupPrice.eventEndTime());
                 EventDateTime savedEventDateTime = eventDateTimeRepository.save(eventDateTime);
-
-                Map<Long, BigDecimal> seatGroupMap = new TreeMap<>();
-                response.put(savedEventDateTime.getId(), seatGroupMap);
 
                 List<SeatGroupPrice> seatGroupPrices = dateSeatGroupPrice.seatGroupPrices();
                 for (SeatGroupPrice seatGroupPrice : seatGroupPrices) {
@@ -100,10 +97,16 @@ public class EventService {
                     BigDecimal seatPrice = seatGroupPrice.price();
                     Price price = new Price(savedEventDateTime, venueSeatGroup, seatPrice);
                     priceRepository.save(price);
-                    seatGroupMap.put(venueSeatGroupId, seatPrice);
                 }
             }
         }
-        return new EventResponse(response);
+        return new EventResponse(event);
+    }
+
+    @Transactional
+    public EventResponse updateEvent(Long eventId, EventUpdateRequest request) {
+        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
+        event.update(request);
+        return new EventResponse(event);
     }
 }

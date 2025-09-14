@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,10 +32,10 @@ public class EventController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_CREATE, event));
     }
 
-    @PatchMapping
-    public ResponseEntity<ResultResponse> updateEvent(
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<ResultResponse> updateEvent(@PathVariable Long eventId,
         @RequestBody @Valid EventUpdateRequest request) {
-        EventResponse event = eventService.updateEvent(request);
+        EventResponse event = eventService.updateEvent(eventId, request);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_UPDATE, event));
     }
 }

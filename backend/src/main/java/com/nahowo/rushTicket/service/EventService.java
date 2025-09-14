@@ -109,4 +109,30 @@ public class EventService {
         event.update(request);
         return new EventResponse(event);
     }
+
+    @Transactional
+    public void deleteEvent(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
+        Venue venue = event.getVenue();
+        // events 삭제
+        event.delete();
+
+        // event_date_times 삭제
+        List<EventDateTime> eventDateTimes = eventDateTimeRepository.findAllByEvent(event);
+        for (EventDateTime eventDatetime : eventDateTimes) {
+            eventDatetime.delete();
+
+            // prices 삭제
+            List<Price> prices = priceRepository.findAllByEventDateTime(eventDatetime);
+            for (Price price : prices) {
+                price.delete();
+            }
+
+            // venue_reservation 삭제
+            LocalDate eventDate = eventDatetime.getEventStartTime().toLocalDate();
+            VenueReservation venueReservation = venueReservationRepository.findByEventDateAndVenue(
+                eventDate, venue);
+            venueReservation.delete();
+        }
+    }
 }

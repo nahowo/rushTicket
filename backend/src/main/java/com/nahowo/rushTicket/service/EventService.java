@@ -1,9 +1,9 @@
 package com.nahowo.rushTicket.service;
 
-import com.nahowo.rushTicket.config.error.exception.EventDateTimeNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
+import com.nahowo.rushTicket.config.error.exception.VenueReservationAlreadyExistException;
 import com.nahowo.rushTicket.config.error.exception.VenueSeatNotFoundException;
 import com.nahowo.rushTicket.domain.Event;
 import com.nahowo.rushTicket.domain.Event.EventStatus;
@@ -31,9 +31,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +60,9 @@ public class EventService {
         // venue_reservation 튜플 추가
         List<EventTimeAndPrice> eventTimeAndPrices = request.eventTimeAndPrices();
         for (EventTimeAndPrice eventTimeAndPrice : eventTimeAndPrices) {
-            VenueReservation venueReservation = new VenueReservation(venue, eventTimeAndPrice.eventDate());
+            LocalDate eventDate = eventTimeAndPrice.eventDate();
+            isVenueReservationExist(venue, eventDate);
+            VenueReservation venueReservation = new VenueReservation(venue, eventDate);
             venueReservationRepository.save(venueReservation);
         }
 
@@ -133,6 +132,12 @@ public class EventService {
             VenueReservation venueReservation = venueReservationRepository.findByEventDateAndVenue(
                 eventDate, venue);
             venueReservation.delete();
+        }
+    }
+
+    private void isVenueReservationExist(Venue venue, LocalDate eventDate) {
+        if (venueReservationRepository.existsByVenueAndEventDate(venue, eventDate)) {
+            throw new VenueReservationAlreadyExistException();
         }
     }
 }

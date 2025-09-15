@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "E001", "내부 서버 에러"),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST.value(), "E002", "유효하지 않은 입력"),
     USEREMAIL_DUPLICATED(HttpStatus.CONFLICT.value(), "UE001", "유저 이메일 중복"),
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED.value(), "UE002", "이메일 또는 비밀번호 불일치"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "UE003", "유저를 찾을 수 없음"),

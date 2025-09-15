@@ -1,5 +1,7 @@
 package com.nahowo.rushTicket.service;
 
+import com.nahowo.rushTicket.config.error.exception.EventAlreadyStartedException;
+import com.nahowo.rushTicket.config.error.exception.EventBookingAlreadyStartedException;
 import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
@@ -58,6 +60,27 @@ public class EventService {
             createEventDateTimes(eventTimeAndPrice, event);
         }
         return new EventResponse(event);
+    }
+
+    @Transactional
+    public EventResponse updateEvent(Long eventId, EventUpdateRequest request) {
+        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
+        if (checkBookingStarted(event)) {
+            throw new EventBookingAlreadyStartedException();
+        }
+        event.update(request);
+        return new EventResponse(event);
+    }
+
+    @Transactional
+    public void deleteEvent(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
+        if (checkEventStarted(event)) {
+            throw new EventAlreadyStartedException();
+        }
+        Venue venue = event.getVenue();
+        event.delete();
+        deleteEventDateTimes(event, venue);
     }
 
     private void createEventDateTimes(EventTimeAndPrice eventTimeAndPrice, Event event) {
@@ -136,19 +159,21 @@ public class EventService {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
-    @Transactional
-    public EventResponse updateEvent(Long eventId, EventUpdateRequest request) {
-        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
-        event.update(request);
-        return new EventResponse(event);
+    private boolean checkBookingStarted(Event event) {
+        if (event.getBookingStartTime().isBefore(LocalDateTime.now())) {
+            return true;
+        }
+        return false;
     }
 
-    @Transactional
-    public void deleteEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
-        Venue venue = event.getVenue();
-        event.delete();
-        deleteEventDateTimes(event, venue);
+    private boolean checkEventStarted(Event event) {
+        List<EventDateTime> eventDateTimes = eventDateTimeRepository.findAllByEvent(event);
+        for (EventDateTime eventDateTime : eventDateTimes) {
+            if (eventDateTime.getEventStartTime().isBefore(LocalDateTime.now())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void deleteEventDateTimes(Event event, Venue venue) {

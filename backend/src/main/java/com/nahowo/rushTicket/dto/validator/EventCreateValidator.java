@@ -69,7 +69,7 @@ public class EventCreateValidator implements
         List<EventTimeAndPrice> eventTimeAndPrices = value.eventTimeAndPrices();
         Optional<LocalDateTime> firstEventStartTime = eventTimeAndPrices.stream()
             .flatMap(event -> event.dateSeatGroupPrices().stream())
-            .map(dateSeat -> dateSeat.eventStartTime())
+            .map(DateSeatGroupPrice::eventStartTime)
             .min(LocalDateTime::compareTo);
         if (!bookingEndTime.isBefore(firstEventStartTime.get())) {
             return false;

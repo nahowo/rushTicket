@@ -48,25 +48,54 @@ public class EventService {
 
     @Transactional
     public EventResponse createEvent(EventCreateRequest request) {
-        // todo: 예외 상황 처리하기, 세부 함수로 분리하기
-        // 판매자 id 조회
-        Long userId = request.userId();
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = getUser(request);
+        Venue venue = getVenue(request);
 
-        // 공연장 id 조회
-        Long venueId = request.venueId();
-        Venue venue = venueRepository.findById(venueId).orElseThrow(VenueNotFoundException::new);
-
-        // venue_reservation 튜플 추가
-        List<EventTimeAndPrice> eventTimeAndPrices = request.eventTimeAndPrices();
+        List<EventTimeAndPrice> eventTimeAndPrices = createEventTimeAndPrices(
+            request, venue);
+        Event event = createEvent(request, user, venue);
         for (EventTimeAndPrice eventTimeAndPrice : eventTimeAndPrices) {
-            LocalDate eventDate = eventTimeAndPrice.eventDate();
-            isVenueReservationExist(venue, eventDate);
-            VenueReservation venueReservation = new VenueReservation(venue, eventDate);
-            venueReservationRepository.save(venueReservation);
+            createEventDateTimes(eventTimeAndPrice, event);
         }
+        return new EventResponse(event);
+    }
 
-        // events 튜플 추가
+    private void createEventDateTimes(EventTimeAndPrice eventTimeAndPrice, Event event) {
+        List<DateSeatGroupPrice> dateSeatGroupPrices = eventTimeAndPrice.dateSeatGroupPrices();
+        for (DateSeatGroupPrice dateSeatGroupPrice : dateSeatGroupPrices) {
+            EventDateTime savedEventDateTime = createEventDateTime(event,
+                dateSeatGroupPrice);
+
+            List<SeatGroupPrice> seatGroupPrices = dateSeatGroupPrice.seatGroupPrices();
+            for (SeatGroupPrice seatGroupPrice : seatGroupPrices) {
+                VenueSeatGroup venueSeatGroup = getVenueSeatGroup(seatGroupPrice);
+                createPrices(seatGroupPrice, savedEventDateTime, venueSeatGroup);
+            }
+        }
+    }
+
+    private EventDateTime createEventDateTime(Event event, DateSeatGroupPrice dateSeatGroupPrice) {
+        EventDateTime eventDateTime = new EventDateTime(event,
+            dateSeatGroupPrice.eventStartTime(), dateSeatGroupPrice.eventEndTime());
+        EventDateTime savedEventDateTime = eventDateTimeRepository.save(eventDateTime);
+        return savedEventDateTime;
+    }
+
+    private void createPrices(SeatGroupPrice seatGroupPrice, EventDateTime savedEventDateTime,
+        VenueSeatGroup venueSeatGroup) {
+        BigDecimal seatPrice = seatGroupPrice.price();
+        Price price = new Price(savedEventDateTime, venueSeatGroup, seatPrice);
+        priceRepository.save(price);
+    }
+
+    private VenueSeatGroup getVenueSeatGroup(SeatGroupPrice seatGroupPrice) {
+        Long venueSeatGroupId = seatGroupPrice.venueSeatGroupId();
+        return venueSeatGroupRepository.findById(
+                venueSeatGroupId)
+            .orElseThrow(VenueSeatNotFoundException::new);
+    }
+
+    private Event createEvent(EventCreateRequest request, User user, Venue venue) {
         String name = request.name();
         String description = request.description();
         LocalDateTime bookingStartTime = request.bookingStartTime();
@@ -75,31 +104,36 @@ public class EventService {
         Event event = new Event(user, venue, name, description, bookingStartTime, bookingEndTime,
             status);
         eventRepository.save(event);
+        return event;
+    }
 
-        // event_date_times 튜플 추가
+    private List<EventTimeAndPrice> createEventTimeAndPrices(EventCreateRequest request, Venue venue) {
+        List<EventTimeAndPrice> eventTimeAndPrices = request.eventTimeAndPrices();
+        createVenueReservations(venue, eventTimeAndPrices);
+        return eventTimeAndPrices;
+    }
+
+    private void createVenueReservations(Venue venue, List<EventTimeAndPrice> eventTimeAndPrices) {
         for (EventTimeAndPrice eventTimeAndPrice : eventTimeAndPrices) {
-            List<DateSeatGroupPrice> dateSeatGroupPrices = eventTimeAndPrice.dateSeatGroupPrices();
-            for (DateSeatGroupPrice dateSeatGroupPrice : dateSeatGroupPrices) {
-                EventDateTime eventDateTime = new EventDateTime(event,
-                    dateSeatGroupPrice.eventStartTime(), dateSeatGroupPrice.eventEndTime());
-                EventDateTime savedEventDateTime = eventDateTimeRepository.save(eventDateTime);
-
-                List<SeatGroupPrice> seatGroupPrices = dateSeatGroupPrice.seatGroupPrices();
-                for (SeatGroupPrice seatGroupPrice : seatGroupPrices) {
-                    // 좌석 그룹 id 조회/검증
-                    Long venueSeatGroupId = seatGroupPrice.venueSeatGroupId();
-                    VenueSeatGroup venueSeatGroup = venueSeatGroupRepository.findById(
-                            venueSeatGroupId)
-                        .orElseThrow(VenueSeatNotFoundException::new);
-
-                    // prices 튜플 추가
-                    BigDecimal seatPrice = seatGroupPrice.price();
-                    Price price = new Price(savedEventDateTime, venueSeatGroup, seatPrice);
-                    priceRepository.save(price);
-                }
-            }
+            createVenueReservation(venue, eventTimeAndPrice);
         }
-        return new EventResponse(event);
+    }
+
+    private void createVenueReservation(Venue venue, EventTimeAndPrice eventTimeAndPrice) {
+        LocalDate eventDate = eventTimeAndPrice.eventDate();
+        isVenueReservationExist(venue, eventDate);
+        VenueReservation venueReservation = new VenueReservation(venue, eventDate);
+        venueReservationRepository.save(venueReservation);
+    }
+
+    private Venue getVenue(EventCreateRequest request) {
+        Long venueId = request.venueId();
+        return venueRepository.findById(venueId).orElseThrow(VenueNotFoundException::new);
+    }
+
+    private User getUser(EventCreateRequest request) {
+        Long userId = request.userId();
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional

@@ -147,25 +147,34 @@ public class EventService {
     public void deleteEvent(Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
         Venue venue = event.getVenue();
-        // events 삭제
         event.delete();
+        deleteEventDateTimes(event, venue);
+    }
 
-        // event_date_times 삭제
+    private void deleteEventDateTimes(Event event, Venue venue) {
         List<EventDateTime> eventDateTimes = eventDateTimeRepository.findAllByEvent(event);
         for (EventDateTime eventDatetime : eventDateTimes) {
-            eventDatetime.delete();
+            deleteEventDateTime(venue, eventDatetime);
+        }
+    }
 
-            // prices 삭제
-            List<Price> prices = priceRepository.findAllByEventDateTime(eventDatetime);
-            for (Price price : prices) {
-                price.delete();
-            }
+    private void deleteEventDateTime(Venue venue, EventDateTime eventDatetime) {
+        deletePrices(eventDatetime);
+        deleteVenueReservation(venue, eventDatetime);
+        eventDatetime.delete();
+    }
 
-            // venue_reservation 삭제
-            LocalDate eventDate = eventDatetime.getEventStartTime().toLocalDate();
-            VenueReservation venueReservation = venueReservationRepository.findByEventDateAndVenue(
-                eventDate, venue);
-            venueReservation.delete();
+    private void deleteVenueReservation(Venue venue, EventDateTime eventDatetime) {
+        LocalDate eventDate = eventDatetime.getEventStartTime().toLocalDate();
+        VenueReservation venueReservation = venueReservationRepository.findByEventDateAndVenue(
+            eventDate, venue);
+        venueReservation.delete();
+    }
+
+    private void deletePrices(EventDateTime eventDatetime) {
+        List<Price> prices = priceRepository.findAllByEventDateTime(eventDatetime);
+        for (Price price : prices) {
+            price.delete();
         }
     }
 

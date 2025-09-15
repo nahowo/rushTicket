@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EventTimeValidator.class)
 public @interface ValidEventTime {
-    String message() default "공연 날짜와 공연 일정 일시는 일치해야 합니다. ";
+    String message() default "";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

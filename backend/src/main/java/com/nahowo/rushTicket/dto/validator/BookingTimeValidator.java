@@ -14,7 +14,7 @@ public class BookingTimeValidator implements
     }
 
     @Override
-    public boolean isValid(EventCreateRequest request, ConstraintValidatorContext context) {
-        return request.bookingStartTime().isBefore(request.bookingEndTime());
+    public boolean isValid(EventCreateRequest value, ConstraintValidatorContext context) {
+        return value.bookingStartTime().isBefore(value.bookingEndTime());
     }
 }

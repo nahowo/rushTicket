@@ -1,6 +1,7 @@
 package com.nahowo.rushTicket.dto.request;
 
 import com.nahowo.rushTicket.dto.annotation.ValidBookingTime;
+import com.nahowo.rushTicket.dto.annotation.ValidEventTime;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -20,7 +21,7 @@ public record EventCreateRequest (
     @NotBlank(message = "공연 이름은 필수입니다. ") String name,
     String description
 ) {
-
+    @ValidEventTime
     public record EventTimeAndPrice (
         @NotNull(message = "공연 일자는 필수입니다. ") LocalDate eventDate,
         @NotEmpty(message = "공연일시/좌석 그룹별 금액은 필수입니다. ") @Valid List<DateSeatGroupPrice> dateSeatGroupPrices

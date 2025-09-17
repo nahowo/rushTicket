@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VenueReservationRepository extends JpaRepository<VenueReservation, Long> {
     boolean existsByVenueAndEventDate(Venue venue, LocalDate eventDate);
+
+    VenueReservation findByEventDateAndVenue(LocalDate eventDate, Venue venue);
 }

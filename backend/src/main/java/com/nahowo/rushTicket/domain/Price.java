@@ -7,9 +7,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "prices")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Price extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_date_time_id", nullable = false)

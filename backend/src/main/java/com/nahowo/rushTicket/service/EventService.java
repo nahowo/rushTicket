@@ -49,6 +49,21 @@ public class EventService {
     private final PriceRepository priceRepository;
 
     @Transactional
+    public List<EventResponse> viewEvents() {
+        List<Event> events = eventRepository.findAll();
+        return events.stream()
+            .map(EventResponse::new)
+            .toList();
+    }
+
+    @Transactional
+    public EventResponse viewEvent(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+            .orElseThrow(EventNotFoundException::new);
+        return new EventResponse(event);
+    }
+
+    @Transactional
     public EventResponse createEvent(EventCreateRequest request) {
         User user = getUser(request);
         Venue venue = getVenue(request);

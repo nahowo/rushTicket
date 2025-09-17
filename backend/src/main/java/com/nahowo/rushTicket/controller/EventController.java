@@ -8,9 +8,11 @@ import com.nahowo.rushTicket.dto.response.EventResponse;
 import com.nahowo.rushTicket.service.EventService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +28,20 @@ public class EventController {
 
     private final EventService eventService;
 
+    @GetMapping
+    public ResponseEntity<ResultResponse> viewEvents() {
+        List<EventResponse> events = eventService.viewEvents();
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENTS_VIEW, events));
+    }
+
+    @GetMapping("/{eventId}")
+    public ResponseEntity<ResultResponse> viewEvent(@PathVariable Long eventId) {
+        EventResponse event = eventService.viewEvent(eventId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_VIEW, event));
+    }
+
     @PostMapping
+
     public ResponseEntity<ResultResponse> createEvent(
         @RequestBody @Valid EventCreateRequest request) {
         EventResponse event = eventService.createEvent(request);

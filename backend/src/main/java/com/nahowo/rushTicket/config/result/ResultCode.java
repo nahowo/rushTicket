@@ -12,7 +12,9 @@ public enum ResultCode {
     VENUE_VIEW("VR002", "공연장 조회 성공"),
     EVENT_CREATE("ER001", "이벤트 등록 성공"),
     EVENT_UPDATE("ER002", "이벤트 수정 성공"),
-    EVENT_DELETE("ER003", "이벤트 삭제 성공");
+    EVENT_DELETE("ER003", "이벤트 삭제 성공"),
+    EVENTS_VIEW("ER004", "이벤트 목록 조회 성공"),
+    EVENT_VIEW("ER005", "이벤트 조회 성공");
 
     private final String code;
     private final String message;

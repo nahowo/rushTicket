@@ -46,10 +46,18 @@ public class Event extends BaseEntity{
     private EventStatus status;
 
     public void update(EventUpdateRequest request) {
-        this.bookingStartTime = request.bookingStartTime();
-        this.bookingEndTime = request.bookingEndTime();
-        this.name = request.name();
-        this.description = request.description();
+        if (request.bookingStartTime() != null) {
+            this.bookingStartTime = request.bookingStartTime();
+        }
+        if (request.bookingEndTime() != null) {
+            this.bookingEndTime = request.bookingEndTime();
+        }
+        if (request.name() != null) {
+            this.name = request.name();
+        }
+        if (request.description() != null) {
+            this.description = request.description();
+        }
     }
 
     public enum EventStatus {

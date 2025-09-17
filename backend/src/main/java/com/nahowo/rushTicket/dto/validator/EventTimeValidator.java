@@ -54,7 +54,7 @@ public class EventTimeValidator implements
         for (DateSeatGroupPrice dateSeatGroupPrice : dateSeatGroupPrices) {
             LocalDateTime eventStartTime = dateSeatGroupPrice.eventStartTime();
             LocalDateTime eventEndTime = dateSeatGroupPrice.eventEndTime();
-            if (eventEndTime.isBefore(eventStartTime)) {
+            if (!eventEndTime.isAfter(eventStartTime)) {
                 return false;
             }
         }

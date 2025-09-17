@@ -160,16 +160,14 @@ public class EventService {
     }
 
     private boolean checkBookingStarted(Event event) {
-        if (event.getBookingStartTime().isBefore(LocalDateTime.now())) {
-            return true;
-        }
-        return false;
+        return !event.getBookingStartTime().isAfter(LocalDateTime.now());
     }
 
     private boolean checkEventStarted(Event event) {
         List<EventDateTime> eventDateTimes = eventDateTimeRepository.findAllByEvent(event);
+        LocalDateTime now = LocalDateTime.now();
         for (EventDateTime eventDateTime : eventDateTimes) {
-            if (eventDateTime.getEventStartTime().isBefore(LocalDateTime.now())) {
+            if (!eventDateTime.getEventStartTime().isAfter(now)) {
                 return true;
             }
         }

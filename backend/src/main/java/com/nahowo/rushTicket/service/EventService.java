@@ -6,7 +6,7 @@ import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueReservationAlreadyExistException;
-import com.nahowo.rushTicket.config.error.exception.VenueSeatNotFoundException;
+import com.nahowo.rushTicket.config.error.exception.VenueSeatGroupNotFoundException;
 import com.nahowo.rushTicket.domain.Event;
 import com.nahowo.rushTicket.domain.Event.EventStatus;
 import com.nahowo.rushTicket.domain.EventDateTime;
@@ -115,7 +115,7 @@ public class EventService {
         Long venueSeatGroupId = seatGroupPrice.venueSeatGroupId();
         return venueSeatGroupRepository.findById(
                 venueSeatGroupId)
-            .orElseThrow(VenueSeatNotFoundException::new);
+            .orElseThrow(VenueSeatGroupNotFoundException::new);
     }
 
     private Event createEvent(EventCreateRequest request, User user, Venue venue) {

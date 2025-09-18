@@ -20,6 +20,9 @@ import com.nahowo.rushTicket.dto.request.EventCreateRequest.DateSeatGroupPrice;
 import com.nahowo.rushTicket.dto.request.EventCreateRequest.EventTimeAndPrice;
 import com.nahowo.rushTicket.dto.request.EventCreateRequest.SeatGroupPrice;
 import com.nahowo.rushTicket.dto.request.EventUpdateRequest;
+import com.nahowo.rushTicket.dto.response.EventDetailResponse;
+import com.nahowo.rushTicket.dto.response.EventDetailResponse.EventDateResponse;
+import com.nahowo.rushTicket.dto.response.EventDetailResponse.VenueSeatGroupResponse;
 import com.nahowo.rushTicket.dto.response.EventResponse;
 import com.nahowo.rushTicket.repository.EventDateTimeRepository;
 import com.nahowo.rushTicket.repository.EventRepository;
@@ -32,7 +35,10 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +55,7 @@ public class EventService {
     private final PriceRepository priceRepository;
 
     @Transactional
-    public List<EventResponse> viewEvents() {
+    public List<EventResponse> viewsEvents() {
         List<Event> events = eventRepository.findAll();
         return events.stream()
             .map(EventResponse::of)
@@ -57,10 +63,30 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse viewEvent(Long eventId) {
+    public EventDetailResponse viewEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
             .orElseThrow(EventNotFoundException::new);
-        return EventResponse.of(event);
+
+        List<EventDateTime> eventDateTimes = eventDateTimeRepository.findAllByEvent(event);
+        Map<LocalDate, List<LocalDateTime>> eventDateMap = new TreeMap<>();
+        for (EventDateTime eventDateTime : eventDateTimes) {
+            LocalDate localDate = eventDateTime.getEventStartTime().toLocalDate();
+            LocalDateTime eventStartTime = eventDateTime.getEventStartTime();
+            if (eventDateMap.containsKey(localDate)) {
+                eventDateMap.get(localDate).add(eventStartTime);
+            } else {
+                eventDateMap.put(localDate, List.of(eventStartTime));
+            }
+        }
+        List<EventDateResponse> eventDateResponses = eventDateMap.entrySet().stream()
+            .map(entry -> EventDateResponse.of(entry.getKey(), entry.getValue()))
+            .toList();
+
+        Venue venue = event.getVenue();
+        List<VenueSeatGroupResponse> venueSeatGroupResponses = venueSeatGroupRepository.findByVenue(venue).stream()
+            .map(VenueSeatGroupResponse::of)
+            .toList();
+        return EventDetailResponse.of(event, eventDateResponses, venueSeatGroupResponses);
     }
 
     @Transactional

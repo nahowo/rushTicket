@@ -4,6 +4,7 @@ import com.nahowo.rushTicket.config.result.ResultCode;
 import com.nahowo.rushTicket.config.result.ResultResponse;
 import com.nahowo.rushTicket.dto.request.EventCreateRequest;
 import com.nahowo.rushTicket.dto.request.EventUpdateRequest;
+import com.nahowo.rushTicket.dto.response.EventDetailResponse;
 import com.nahowo.rushTicket.dto.response.EventResponse;
 import com.nahowo.rushTicket.service.EventService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,13 +31,13 @@ public class EventController {
 
     @GetMapping
     public ResponseEntity<ResultResponse> viewEvents() {
-        List<EventResponse> events = eventService.viewEvents();
+        List<EventResponse> events = eventService.viewsEvents();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENTS_VIEW, events));
     }
 
     @GetMapping("/{eventId}")
     public ResponseEntity<ResultResponse> viewEvent(@PathVariable Long eventId) {
-        EventResponse event = eventService.viewEvent(eventId);
+        EventDetailResponse event = eventService.viewEvent(eventId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_VIEW, event));
     }
 

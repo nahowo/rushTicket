@@ -26,7 +26,7 @@ public class UserService {
         String password = passwordEncoder.encode(reqeust.password());
         try {
             User createdUser = userRepository.save(new User(name, email, password));
-            return new UserResponse(createdUser);
+            return UserResponse.of(createdUser);
         } catch (DataIntegrityViolationException e) {
             throw new UserEmailDuplicatedException();
         }
@@ -41,6 +41,6 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new LoginFailedException();
         }
-        return new UserResponse(user);
+        return UserResponse.of(user);
     }
 }

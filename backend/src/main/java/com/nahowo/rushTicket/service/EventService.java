@@ -52,7 +52,7 @@ public class EventService {
     public List<EventResponse> viewEvents() {
         List<Event> events = eventRepository.findAll();
         return events.stream()
-            .map(EventResponse::new)
+            .map(EventResponse::of)
             .toList();
     }
 
@@ -60,7 +60,7 @@ public class EventService {
     public EventResponse viewEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
             .orElseThrow(EventNotFoundException::new);
-        return new EventResponse(event);
+        return EventResponse.of(event);
     }
 
     @Transactional
@@ -74,7 +74,7 @@ public class EventService {
         for (EventTimeAndPrice eventTimeAndPrice : eventTimeAndPrices) {
             createEventDateTimes(eventTimeAndPrice, event);
         }
-        return new EventResponse(event);
+        return EventResponse.of(event);
     }
 
     @Transactional
@@ -84,7 +84,7 @@ public class EventService {
             throw new EventBookingAlreadyStartedException();
         }
         event.update(request);
-        return new EventResponse(event);
+        return EventResponse.of(event);
     }
 
     @Transactional

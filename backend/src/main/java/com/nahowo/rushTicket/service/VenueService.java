@@ -22,7 +22,7 @@ public class VenueService {
 
     public List<VenueResponse> getVenues() {
         return venueRepository.findAll()
-            .stream().map((VenueResponse::new))
+            .stream().map((VenueResponse::of))
             .toList();
     }
 
@@ -40,6 +40,6 @@ public class VenueService {
                 availabilities.put(day, VenueStatus.AVAILABLE);
             }
         }
-        return new VenueDetailResponse(venue, availabilities);
+        return VenueDetailResponse.of(venue, availabilities);
     }
 }

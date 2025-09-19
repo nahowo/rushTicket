@@ -22,12 +22,4 @@ public class Seat extends BaseEntity {
 
     @Column(name = "seat_number", nullable = false)
     private String seatNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SeatStatus status;
-
-    public enum SeatStatus {
-        AVAILABLE, BOOKED, LOCKED
-    }
 }

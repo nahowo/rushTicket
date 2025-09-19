@@ -2,6 +2,7 @@ package com.nahowo.rushTicket.service;
 
 import com.nahowo.rushTicket.config.error.exception.EventAlreadyStartedException;
 import com.nahowo.rushTicket.config.error.exception.EventBookingAlreadyStartedException;
+import com.nahowo.rushTicket.config.error.exception.EventDateTimeNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
@@ -11,6 +12,8 @@ import com.nahowo.rushTicket.domain.Event;
 import com.nahowo.rushTicket.domain.Event.EventStatus;
 import com.nahowo.rushTicket.domain.EventDateTime;
 import com.nahowo.rushTicket.domain.Price;
+import com.nahowo.rushTicket.domain.Seat;
+import com.nahowo.rushTicket.domain.SeatStatus;
 import com.nahowo.rushTicket.domain.User;
 import com.nahowo.rushTicket.domain.Venue;
 import com.nahowo.rushTicket.domain.VenueReservation;
@@ -24,9 +27,13 @@ import com.nahowo.rushTicket.dto.response.EventDetailResponse;
 import com.nahowo.rushTicket.dto.response.EventDetailResponse.EventDateResponse;
 import com.nahowo.rushTicket.dto.response.EventDetailResponse.VenueSeatGroupResponse;
 import com.nahowo.rushTicket.dto.response.EventResponse;
+import com.nahowo.rushTicket.dto.response.SeatStatusesResponse;
+import com.nahowo.rushTicket.dto.response.SeatStatusesResponse.SeatStatusResponse;
 import com.nahowo.rushTicket.repository.EventDateTimeRepository;
 import com.nahowo.rushTicket.repository.EventRepository;
 import com.nahowo.rushTicket.repository.PriceRepository;
+import com.nahowo.rushTicket.repository.SeatRepository;
+import com.nahowo.rushTicket.repository.SeatStatusRepository;
 import com.nahowo.rushTicket.repository.UserRepository;
 import com.nahowo.rushTicket.repository.VenueRepository;
 import com.nahowo.rushTicket.repository.VenueReservationRepository;
@@ -35,7 +42,6 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,6 +59,8 @@ public class EventService {
     private final EventDateTimeRepository eventDateTimeRepository;
     private final VenueSeatGroupRepository venueSeatGroupRepository;
     private final PriceRepository priceRepository;
+    private final SeatRepository seatRepository;
+    private final SeatStatusRepository seatStatusRepository;
 
     @Transactional
     public List<EventResponse> viewsEvents() {
@@ -90,9 +98,23 @@ public class EventService {
     }
 
     @Transactional
+    public SeatStatusesResponse viewSeatStatus(Long eventId, Long eventDateTimeId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(EventNotFoundException::new);
+        Venue venue = event.getVenue();
+        Seat seat = seatRepository.findByVenue(venue);
+        EventDateTime eventDateTime = eventDateTimeRepository.findById(eventDateTimeId).orElseThrow(
+            EventDateTimeNotFoundException::new);
+        List<SeatStatusResponse> seatStatusResponses = seatStatusRepository.findAllBySeatAndEventDateTime(
+                seat, eventDateTime).stream()
+            .map(SeatStatusResponse::of)
+            .toList();
+        return new SeatStatusesResponse(seatStatusResponses);
+    }
+
+    @Transactional
     public EventResponse createEvent(EventCreateRequest request) {
-        User user = getUser(request);
-        Venue venue = getVenue(request);
+        User user = getUser(request.userId());
+        Venue venue = getVenue(request.venueId());
 
         List<EventTimeAndPrice> eventTimeAndPrices = createEventTimeAndPrices(
             request, venue);
@@ -190,13 +212,11 @@ public class EventService {
         venueReservationRepository.save(venueReservation);
     }
 
-    private Venue getVenue(EventCreateRequest request) {
-        Long venueId = request.venueId();
+    private Venue getVenue(Long venueId) {
         return venueRepository.findById(venueId).orElseThrow(VenueNotFoundException::new);
     }
 
-    private User getUser(EventCreateRequest request) {
-        Long userId = request.userId();
+    private User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 

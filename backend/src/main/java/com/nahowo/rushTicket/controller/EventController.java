@@ -6,6 +6,7 @@ import com.nahowo.rushTicket.dto.request.EventCreateRequest;
 import com.nahowo.rushTicket.dto.request.EventUpdateRequest;
 import com.nahowo.rushTicket.dto.response.EventDetailResponse;
 import com.nahowo.rushTicket.dto.response.EventResponse;
+import com.nahowo.rushTicket.dto.response.SeatStatusesResponse;
 import com.nahowo.rushTicket.service.EventService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Events")
@@ -39,6 +41,13 @@ public class EventController {
     public ResponseEntity<ResultResponse> viewEvent(@PathVariable Long eventId) {
         EventDetailResponse event = eventService.viewEvent(eventId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.EVENT_VIEW, event));
+    }
+
+    @GetMapping("/eventSeats/{eventId}")
+    public ResponseEntity<ResultResponse> viewSeatsStatus(@PathVariable Long eventId,
+        @RequestParam Long eventDateTimeId) {
+        SeatStatusesResponse seatStatuses = eventService.viewSeatStatus(eventId, eventDateTimeId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_STATUS_VIEW, seatStatuses));
     }
 
     @PostMapping

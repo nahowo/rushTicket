@@ -1,5 +1,6 @@
 package com.nahowo.rushTicket.service;
 
+import com.nahowo.rushTicket.config.error.SeatStatusNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.EventAlreadyStartedException;
 import com.nahowo.rushTicket.config.error.exception.EventBookingAlreadyStartedException;
 import com.nahowo.rushTicket.config.error.exception.EventDateTimeNotFoundException;
@@ -14,6 +15,8 @@ import com.nahowo.rushTicket.domain.EventDateTime;
 import com.nahowo.rushTicket.domain.Price;
 import com.nahowo.rushTicket.domain.Seat;
 import com.nahowo.rushTicket.domain.SeatStatus;
+import com.nahowo.rushTicket.domain.Ticket;
+import com.nahowo.rushTicket.domain.Ticket.TicketStatus;
 import com.nahowo.rushTicket.domain.User;
 import com.nahowo.rushTicket.domain.Venue;
 import com.nahowo.rushTicket.domain.VenueReservation;
@@ -34,6 +37,7 @@ import com.nahowo.rushTicket.repository.EventRepository;
 import com.nahowo.rushTicket.repository.PriceRepository;
 import com.nahowo.rushTicket.repository.SeatRepository;
 import com.nahowo.rushTicket.repository.SeatStatusRepository;
+import com.nahowo.rushTicket.repository.TicketRepository;
 import com.nahowo.rushTicket.repository.UserRepository;
 import com.nahowo.rushTicket.repository.VenueRepository;
 import com.nahowo.rushTicket.repository.VenueReservationRepository;
@@ -61,6 +65,7 @@ public class EventService {
     private final PriceRepository priceRepository;
     private final SeatRepository seatRepository;
     private final SeatStatusRepository seatStatusRepository;
+    private final TicketRepository ticketRepository;
 
     @Transactional
     public List<EventResponse> viewsEvents() {
@@ -109,6 +114,23 @@ public class EventService {
             .map(SeatStatusResponse::of)
             .toList();
         return new SeatStatusesResponse(seatStatusResponses);
+    }
+
+    @Transactional
+    public SeatStatusResponse bookSeat(Long userId, Long seatStatusId) {
+        SeatStatus seatStatus = seatStatusRepository.findById(seatStatusId)
+            .orElseThrow(SeatStatusNotFoundException::new);
+        seatStatus.bookSeat();
+        EventDateTime eventDateTime = seatStatus.getEventDateTime();
+        VenueSeatGroup venueSeatGroup = seatStatus.getSeat().getVenueSeatGroup();
+        Price price = priceRepository.findByEventDateTimeAndVenueSeatGroup(
+            eventDateTime, venueSeatGroup);
+
+        User user = getUser(userId);
+        Ticket ticket = new Ticket(user, price, seatStatus, "qrcode", TicketStatus.BOOKED,
+            LocalDateTime.now());
+        ticketRepository.save(ticket);
+        return SeatStatusResponse.of(seatStatus);
     }
 
     @Transactional

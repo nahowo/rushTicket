@@ -7,6 +7,7 @@ import com.nahowo.rushTicket.dto.request.EventUpdateRequest;
 import com.nahowo.rushTicket.dto.response.EventDetailResponse;
 import com.nahowo.rushTicket.dto.response.EventResponse;
 import com.nahowo.rushTicket.dto.response.SeatStatusesResponse;
+import com.nahowo.rushTicket.dto.response.SeatStatusesResponse.SeatStatusResponse;
 import com.nahowo.rushTicket.service.EventService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,7 +51,11 @@ public class EventController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_STATUS_VIEW, seatStatuses));
     }
 
-    @PostMapping
+    @PostMapping("/bookSeat")
+    public ResponseEntity<ResultResponse> bookSeat(@RequestParam Long userId, @RequestParam Long seatStatusId) {
+        SeatStatusResponse seatStatus = eventService.bookSeat(userId, seatStatusId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_BOOK, seatStatus));
+    }
 
     public ResponseEntity<ResultResponse> createEvent(
         @RequestBody @Valid EventCreateRequest request) {

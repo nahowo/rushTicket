@@ -30,4 +30,8 @@ public class SeatStatus extends BaseEntity {
     public enum Status {
         AVAILABLE, BOOKED, LOCKED
     }
+
+    public void bookSeat() {
+        this.status = Status.BOOKED;
+    }
 }

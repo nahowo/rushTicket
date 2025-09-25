@@ -57,6 +57,13 @@ public class EventController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_BOOK, seatStatus));
     }
 
+    @PatchMapping("/cancelSeat/{ticketId}")
+    public ResponseEntity<ResultResponse> cancelSeat(@PathVariable Long ticketId) {
+        eventService.cancelSeat(ticketId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_CANCEL));
+    }
+
+    @PostMapping
     public ResponseEntity<ResultResponse> createEvent(
         @RequestBody @Valid EventCreateRequest request) {
         EventResponse event = eventService.createEvent(request);

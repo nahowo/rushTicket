@@ -5,6 +5,7 @@ import com.nahowo.rushTicket.config.error.exception.EventAlreadyStartedException
 import com.nahowo.rushTicket.config.error.exception.EventBookingAlreadyStartedException;
 import com.nahowo.rushTicket.config.error.exception.EventDateTimeNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
+import com.nahowo.rushTicket.config.error.exception.TicketNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueReservationAlreadyExistException;
@@ -127,10 +128,20 @@ public class EventService {
             eventDateTime, venueSeatGroup);
 
         User user = getUser(userId);
-        Ticket ticket = new Ticket(user, price, seatStatus, "qrcode", TicketStatus.BOOKED,
+        Ticket ticket = new Ticket(user, price, seatStatus, null, TicketStatus.BOOKED,
             LocalDateTime.now());
         ticketRepository.save(ticket);
         return SeatStatusResponse.of(seatStatus);
+    }
+
+    @Transactional
+    public void cancelSeat(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(TicketNotFoundException::new);
+        ticket.cancelTicket();
+
+        SeatStatus seatStatus = ticket.getSeatStatus();
+        seatStatus.cancelSeat();
     }
 
     @Transactional

@@ -34,4 +34,8 @@ public class SeatStatus extends BaseEntity {
     public void bookSeat() {
         this.status = Status.BOOKED;
     }
+
+    public void cancelSeat() {
+        this.status = Status.AVAILABLE;
+    }
 }

@@ -5,6 +5,8 @@ import com.nahowo.rushTicket.config.error.exception.EventAlreadyStartedException
 import com.nahowo.rushTicket.config.error.exception.EventBookingAlreadyStartedException;
 import com.nahowo.rushTicket.config.error.exception.EventDateTimeNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.EventNotFoundException;
+import com.nahowo.rushTicket.config.error.exception.TicketAlreadyCanceledException;
+import com.nahowo.rushTicket.config.error.exception.TicketAlreadyUsedException;
 import com.nahowo.rushTicket.config.error.exception.TicketNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.UserNotFoundException;
 import com.nahowo.rushTicket.config.error.exception.VenueNotFoundException;
@@ -139,6 +141,12 @@ public class EventService {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(TicketNotFoundException::new);
         ticket.cancelTicket();
+        if (ticket.getStatus() == TicketStatus.CANCELED) {
+            throw new TicketAlreadyCanceledException();
+        }
+        if (ticket.getStatus() == TicketStatus.USED) {
+            throw new TicketAlreadyUsedException();
+        }
 
         SeatStatus seatStatus = ticket.getSeatStatus();
         seatStatus.cancelSeat();

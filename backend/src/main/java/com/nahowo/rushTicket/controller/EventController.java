@@ -63,6 +63,12 @@ public class EventController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_CANCEL));
     }
 
+    @PatchMapping("/useTicket/{ticketId}")
+    public ResponseEntity<ResultResponse> useTicket(@PathVariable Long ticketId) {
+        eventService.useTicket(ticketId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.SEAT_USED));
+    }
+
     @PostMapping
     public ResponseEntity<ResultResponse> createEvent(
         @RequestBody @Valid EventCreateRequest request) {

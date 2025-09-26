@@ -140,16 +140,19 @@ public class EventService {
     public void cancelSeat(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(TicketNotFoundException::new);
+        validateTicket(ticket);
         ticket.cancelTicket();
-        if (ticket.getStatus() == TicketStatus.CANCELED) {
-            throw new TicketAlreadyCanceledException();
-        }
-        if (ticket.getStatus() == TicketStatus.USED) {
-            throw new TicketAlreadyUsedException();
-        }
 
         SeatStatus seatStatus = ticket.getSeatStatus();
         seatStatus.cancelSeat();
+    }
+
+    @Transactional
+    public void useTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(TicketNotFoundException::new);
+        validateTicket(ticket);
+        ticket.useTicket();
     }
 
     @Transactional
@@ -185,6 +188,15 @@ public class EventService {
         Venue venue = event.getVenue();
         event.delete();
         deleteEventDateTimes(event, venue);
+    }
+
+    private static void validateTicket(Ticket ticket) {
+        if (ticket.getStatus() == TicketStatus.CANCELED) {
+            throw new TicketAlreadyCanceledException();
+        }
+        if (ticket.getStatus() == TicketStatus.USED) {
+            throw new TicketAlreadyUsedException();
+        }
     }
 
     private void createEventDateTimes(EventTimeAndPrice eventTimeAndPrice, Event event) {

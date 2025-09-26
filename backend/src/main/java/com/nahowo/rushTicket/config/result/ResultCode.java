@@ -17,7 +17,8 @@ public enum ResultCode {
     EVENT_VIEW("ER005", "이벤트 조회 성공"),
     SEAT_STATUS_VIEW("SR001", "공연 좌석 상태 조회 성공"),
     SEAT_BOOK("SR002", "공연 좌석 예매 성공"),
-    SEAT_CANCEL("SR003", "공연 좌석 취소 성공");
+    SEAT_CANCEL("SR003", "공연 좌석 취소 성공"),
+    SEAT_USED("SR004", "공연 티켓 사용 성공");
 
     private final String code;
     private final String message;

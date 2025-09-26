@@ -17,8 +17,12 @@ public enum ErrorCode {
     EVENT_ALREADY_STARTED(HttpStatus.BAD_REQUEST.value(), "EE002", "공연이 이미 시작됨"),
     EVENT_BOOKING_ALREADY_STARTED(HttpStatus.BAD_REQUEST.value(), "EE003", "공연 예매가 이미 시작됨"),
     VENUE_SEAT_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "SE001", "좌석 그룹을 찾을 수 없음"),
+    SEAT_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "SE002", "좌석 상태를 찾을 수 없음"),
     EVENT_DATE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "EDE001", "공연일시를 찾을 수 없음"),
-    VENUE_RESERVATION_ALREADY_EXIST(HttpStatus.BAD_REQUEST.value(), "VRE001", "해당 공연장/일정이 이미 존재함");
+    VENUE_RESERVATION_ALREADY_EXIST(HttpStatus.BAD_REQUEST.value(), "VRE001", "해당 공연장/일정이 이미 존재함"),
+    TICKET_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "TE001", "티켓을 찾을 수 없음"),
+    TICKET_ALREADY_CANCELED(HttpStatus.BAD_REQUEST.value(), "TE002", "티켓이 이미 취소됨"),
+    TICKET_ALREADY_USED(HttpStatus.BAD_REQUEST.value(), "TE003", "티켓이 이미 사용됨");
     private final int httpStatus;
     private final String code;
     private final String message;

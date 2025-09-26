@@ -9,9 +9,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tickets")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Getter
 public class Ticket extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
@@ -22,8 +29,8 @@ public class Ticket extends BaseEntity{
     private Price price;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
-    private Seat seat;
+    @JoinColumn(name = "seat_status_id", nullable = false)
+    private SeatStatus seatStatus;
 
     @Column(name = "qr_code", nullable = false, unique = true)
     private String qrCode;
@@ -37,5 +44,13 @@ public class Ticket extends BaseEntity{
 
     public enum TicketStatus {
         BOOKED, USED, CANCELED
+    }
+
+    public void cancelTicket() {
+        this.status = TicketStatus.CANCELED;
+    }
+
+    public void useTicket() {
+        this.status = TicketStatus.USED;
     }
 }

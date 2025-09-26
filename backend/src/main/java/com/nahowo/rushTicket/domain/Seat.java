@@ -8,9 +8,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
 @Table(name = "seats")
+@Getter
 public class Seat extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false)
@@ -22,12 +24,4 @@ public class Seat extends BaseEntity {
 
     @Column(name = "seat_number", nullable = false)
     private String seatNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SeatStatus status;
-
-    public enum SeatStatus {
-        AVAILABLE, BOOKED, LOCKED
-    }
 }
